@@ -11,7 +11,7 @@
 | 3 | ループ設計テンプレート（記入例3本つき） | [kit/03-loop-design-template.md](./kit/03-loop-design-template.md) |
 | 4 | 公式ブログ3本の日本語まとめ（読まなくてOK版） | [kit/04-official-blog-digest.md](./kit/04-official-blog-digest.md) |
 | 5 | 残り期間フル活用・5日間実行カレンダー | [kit/05-five-day-plan.md](./kit/05-five-day-plan.md) |
-| 6 | 本日のスライド 完全版（全94ページ） | [slides.html](./slides.html) |
+| 6 | 本日のスライド 完全版（全98ページ） | [slides.html](./slides.html) |
 
 ## 受け取り方
 
