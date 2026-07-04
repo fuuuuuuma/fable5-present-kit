@@ -185,7 +185,7 @@
 ゴール: 次回から「構成を渡すだけ」で同じ品質の制作物が出てくる状態</pre>
   <div class="btns">
     <button class="btn" onclick="copyPrompt('p1', this)">📋 全文をコピー</button>
-    <a class="btn ghost" href="kit/01-seven-moves-prompts.md" download>⬇ ファイルでダウンロード（.md）</a>
+    <button class="btn ghost" onclick="downloadText('p1','01-seven-moves-prompts.md', this)">⬇ ファイルでダウンロード（.md）</button>
   </div>
 </section>
 
@@ -236,7 +236,7 @@
 - リポジトリや履歴を見れば分かることはメモリに書かない。間違っていたメモリは削除する</pre>
   <div class="btns">
     <button class="btn" onclick="copyPrompt('p2', this)">📋 全文をコピー</button>
-    <a class="btn ghost" href="kit/02-claudemd-snippets.md" download>⬇ ファイルでダウンロード（.md）</a>
+    <button class="btn ghost" onclick="downloadText('p2','02-claudemd-snippets.md', this)">⬇ ファイルでダウンロード（.md）</button>
   </div>
 </section>
 
@@ -294,7 +294,7 @@
 【失敗時】     判断がつかない案件は「要人間判断」フォルダに退避して通知</pre>
   <div class="btns">
     <button class="btn" onclick="copyPrompt('p3', this)">📋 全文をコピー</button>
-    <a class="btn ghost" href="kit/03-loop-design-template.md" download>⬇ ファイルでダウンロード（.md）</a>
+    <button class="btn ghost" onclick="downloadText('p3','03-loop-design-template.md', this)">⬇ ファイルでダウンロード（.md）</button>
   </div>
 </section>
 
@@ -412,7 +412,7 @@ AIへの指示の置き場所は7種類あり、それぞれ「読み込まれ�
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</pre>
   <div class="btns">
     <button class="btn" onclick="copyPrompt('p4', this)">📋 全文をコピー</button>
-    <a class="btn ghost" href="kit/04-official-blog-digest.md" download>⬇ ファイルでダウンロード（.md）</a>
+    <button class="btn ghost" onclick="downloadText('p4','04-official-blog-digest.md', this)">⬇ ファイルでダウンロード（.md）</button>
   </div>
 </section>
 
@@ -457,7 +457,7 @@ AIへの指示の置き場所は7種類あり、それぞれ「読み込まれ�
 - 1日の終わりに、今日の教訓をメモリに1件書かせる</pre>
   <div class="btns">
     <button class="btn" onclick="copyPrompt('p5', this)">📋 全文をコピー</button>
-    <a class="btn ghost" href="kit/05-five-day-plan.md" download>⬇ ファイルでダウンロード（.md）</a>
+    <button class="btn ghost" onclick="downloadText('p5','05-five-day-plan.md', this)">⬇ ファイルでダウンロード（.md）</button>
   </div>
 </section>
 
@@ -471,8 +471,8 @@ AIへの指示の置き場所は7種類あり、それぞれ「読み込まれ�
   </ul>
   <div class="btns">
     <a class="btn" href="slides.html" target="_blank" rel="noopener">▶ ブラウザで開く</a>
-    <a class="btn ghost" href="slides.html" download="fable5-seminar-slides.html">⬇ ファイルでダウンロード（.html）</a>
   </div>
+  <p class="point">💡 手元に保存したい場合は、開いたページでブラウザの「ページを保存」（Cmd+S / Ctrl+S）をご利用ください。</p>
 </section>
 
   <section class="howto">
@@ -490,13 +490,19 @@ AIへの指示の置き場所は7種類あり、それぞれ「読み込まれ�
 </div>
 <script>
 function copyTextWithFallback(text){
-  return navigator.clipboard.writeText(text).then(() => true).catch(() => {
-    const ta = document.createElement('textarea');
-    ta.value = text; document.body.appendChild(ta); ta.select();
-    const ok = document.execCommand('copy');
-    ta.remove();
-    return ok;
-  });
+  function fallback(){
+    try {
+      const ta = document.createElement('textarea');
+      ta.value = text; document.body.appendChild(ta); ta.select();
+      const ok = document.execCommand('copy');
+      ta.remove();
+      return ok;
+    } catch(e){ return false; }
+  }
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    return navigator.clipboard.writeText(text).then(() => true).catch(fallback);
+  }
+  return Promise.resolve(fallback());
 }
 function showCopyResult(btn, ok){
   const orig = btn.textContent;
@@ -507,14 +513,17 @@ async function copyPrompt(id, btn){
   const ok = await copyTextWithFallback(document.getElementById(id).textContent);
   showCopyResult(btn, ok);
 }
-async function copyFile(path, btn){
+function downloadText(id, filename, btn){
   try {
-    const res = await fetch(path);
-    if(!res.ok) throw new Error('fetch failed');
-    const ok = await copyTextWithFallback(await res.text());
-    showCopyResult(btn, ok);
+    const text = document.getElementById(id).textContent;
+    const blob = new Blob([text], {type:'text/plain;charset=utf-8'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = filename;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 2000);
   } catch(e){
-    window.location.href = path;
+    if(btn){ const orig = btn.textContent; btn.textContent = '✖ 保存できません。上のコピーをご利用ください'; setTimeout(() => { btn.textContent = orig; }, 3500); }
   }
 }
 </script>
